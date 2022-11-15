@@ -1,7 +1,7 @@
 -- I.	Simple Queries
 
 
---Simple Queries / Ex 1: 459 rows
+--Simple Queries / Ex 1: 
 select
 	EventName,
 	EventDate
@@ -57,7 +57,7 @@ where
 	CategoryID = 11;
 
 
---Use WHERE / Ex 2: 2 rows
+--Use WHERE / Ex 2: 
 select
 	*
 from
@@ -67,7 +67,7 @@ where
 	and month(EventDate) = 2;
 
 
---Use WHERE / Ex 3: 2 rows
+--Use WHERE / Ex 3: 
 select
 	*
 from
@@ -77,7 +77,7 @@ where
 	or EventName like '%Pandy %';
 
 
---Use WHERE / Ex 4: 11 rows, 5 rows after add year >=1970
+--Use WHERE / Ex 4: 
 
 select
 	*
@@ -89,7 +89,7 @@ where
 	or CategoryID = 4) 
 	and year(EventDate) >= 1970;
 
---Use WHERE / Ex 5: 4 rows
+--Use WHERE / Ex 5: 
 select
 	*
 from
@@ -99,7 +99,7 @@ where
 	and EventDetails like '%Train%';
 	
 	
---Use WHERE / Ex 6: 6 rows
+--Use WHERE / Ex 6: 
 select
 	*
 from
@@ -109,7 +109,7 @@ where
 	and EventName not like '%Space%'
 	and EventDetails not like '%Space%'
 	
---Use WHERE / Ex 7: 91 rows
+--Use WHERE / Ex 7: 
 select
 	*
 from
@@ -120,7 +120,7 @@ where
 	and EventDetails not like '%Death%';
 
 -- III. Basic joins
---Basic joins / Ex 1: 13 rows
+--Basic joins / Ex 1: 
 SELECT
 	tblAuthor.AuthorName,
 	tblEpisode.Title,
@@ -135,7 +135,7 @@ ORDER BY
 	tblEpisode.Title;
 
 
---Basic joins / Ex 2: 15 rows
+--Basic joins / Ex 2: 
 select
 	td.DoctorName ,
 	te.Title
@@ -147,7 +147,7 @@ where
 	year(te.EpisodeDate) = 2010;
 
 
---Basic joins / Ex 3: 459 rows
+--Basic joins / Ex 3: 
 select
 	CountryName ,
 	eventname,
@@ -159,7 +159,7 @@ inner join tblEvent te on
 order by
 	eventdate;
 
---Basic joins / Ex 4: 5 rows
+--Basic joins / Ex 4: 
 select
 	te.EventName,
 	tc.CountryName,
@@ -175,7 +175,7 @@ where
 	or tc2.ContinentName = 'Antarctic';
 
 --Basic joins / Ex 5:
---Inner join, 459 rows
+--Inner join
 select
 	EventName,
 	EventDate,
@@ -204,7 +204,7 @@ full outer join tblCategory tc on
 	te.CategoryID = tc.CategoryID
 where EventID is null;
 
---Basic joins / Ex 6:	 16 rows
+--Basic joins / Ex 6:	 
 select
 	Title,
 	authorname,
@@ -221,7 +221,7 @@ where
 	te2.EnemyName = 'Daleks'
 
 
---Basic joins / Ex 7: 2 rows
+--Basic joins / Ex 7: 
 select 
 ta.AuthorName ,
 len(ta.AuthorName),
@@ -244,7 +244,7 @@ inner join tblEnemy te2 on
 	tee.EnemyId = te2.EnemyId
 where len(ta.AuthorName) + len(te.Title) + len(td.DoctorName) + len(te2.EnemyName) < 40;
 
---Basic joins / Ex 8: 1 row
+--Basic joins / Ex 8: 
 select
 	*
 from
@@ -255,7 +255,7 @@ where
 	te.EventID is null;
 
 -- IV. Aggregation and grouping
---Aggregation and grouping / Ex 1: 25 rows
+--Aggregation and grouping / Ex 1: 
 select
 	ta.AuthorName,
 	count(distinct EpisodeId) as [Count Episode],
@@ -271,7 +271,7 @@ order by
 	count(distinct EpisodeId) desc;
 
 
---Aggregation and grouping / Ex 2: 18 rows
+--Aggregation and grouping / Ex 2: 
 select
 	tc.CategoryName ,
 	count(distinct te.EventID) as [Count event]
@@ -308,7 +308,7 @@ group by
 	tc2.ContinentName,
 	tc.CountryName;
 
---Aggregation and grouping / Ex 5: 4 rows
+--Aggregation and grouping / Ex 5: 
 select
 	ta.AuthorName,
 	td.DoctorName,
@@ -327,7 +327,7 @@ having
 order by
 	count(distinct te.EpisodeId) desc;
 
---Aggregation and grouping / Ex 6: 4 rows
+--Aggregation and grouping / Ex 6: 
 select
 	year(te.EpisodeDate) as [Episode Year],
 	te2.EnemyName,
@@ -351,7 +351,7 @@ order by
 
 
 
---Aggregation and grouping / Ex 7: 12 rows 
+--Aggregation and grouping / Ex 7: 
 select
 	left(tc.CategoryName, 1),
 	count(distinct te.EventID) as [Number of events],
@@ -535,8 +535,258 @@ from
 
 
 
+--Subqueries / Ex 1:
+
+select
+	eventname,
+	eventdate
+from
+	tblEvent te
+where
+	eventdate > 
+	(select
+		max(eventdate)
+	from
+		tblEvent te
+	where
+		CountryID = 21)
+order by
+	EventDate desc;
 
 
+--Subqueries / Ex 2: 
+select
+	EventName,
+	len(EventName) as [Name length]
+from
+	tblEvent te2
+where
+	len(EventName) >
+	(select
+		avg(len(eventname)) as [avg event name length]
+	from
+		tblEvent te)
+order by
+	len(EventName) desc;
+
+
+--Subqueries / Ex 3: 
+
+select
+	tc4.ContinentName ,
+	EventName
+from
+	tblEvent te2
+inner join tblCountry tc3 on
+	te2.CountryID = tc3.CountryID
+inner join tblContinent tc4 on
+	tc3.ContinentID = tc4.ContinentID
+where
+	tc4.ContinentName in (
+	select 
+		top 3 tc2.ContinentName 
+	from
+		tblEvent te
+	inner join tblCountry tc on
+		te.CountryID = tc.CountryID
+	inner join tblContinent tc2 on
+		tc.ContinentID = tc2.ContinentID
+	group by
+		tc2.ContinentName
+	order by
+		count(distinct EventID) asc;
+
+--Subqueries / Ex 4: 
+select
+	A.CountryName
+from
+	TblCountry A
+inner join 
+	(select
+		TE.CountryID,
+		COUNT(distinct TE.EventID) as countd_event
+	from
+		tblEvent TE
+	group by
+		TE.CountryID
+	having
+		COUNT(distinct TE.EventID) > 8) B on
+	A.CountryID = B.CountryID;
+
+
+
+--Subqueries / Ex 5: 
+select
+	EventName
+from
+	tblEvent te
+where
+	CountryID not in 
+		(select
+			top 30 CountryID
+		from
+			tblCountry tc
+		order by
+			countryname desc)
+	and CategoryID not in (
+		select
+			top 15 CategoryID
+		from
+			tblCategory tc2
+		order by
+			categoryname desc);
+
+
+-- CTEs / Ex 1:
+-- show the number of events whose descriptions contain the words this and/or that:
+	with ThisAndThat as
+	(select te.EventID, 
+	case
+		when te.EventName  like '%this%' then '1'
+		when te.EventDetails like '%this%' then '1'
+		else '0'
+		end as Ifthis,
+	case
+		when te.EventName  like '%that%' then '1'
+		when te.EventDetails like '%that%' then '1'
+		else '0'
+		end as Ifthat	
+	from
+		tblEvent te)
+select
+	Ifthis,
+	Ifthat, count(DISTINCT EventID) as [No of events]
+from
+	ThisAndThat as tat
+where
+	Ifthis = 0 and Ifthat = 0 
+	or Ifthis = 1 and Ifthat = 0
+	or Ifthis = 0 and Ifthat = 1
+	or Ifthis = 1 and Ifthat = 1
+	group by Ifthis, Ifthat;
+
+	-- Show the 3 events whose details contain both this and that: 
+	with ThisAndThat as
+	(select te.EventID, 
+	case
+		when te.EventName  like '%this%' then '1'
+		when te.EventDetails like '%this%' then '1'
+		else '0'
+		end as Ifthis,
+	case
+		when te.EventName  like '%that%' then '1'
+		when te.EventDetails like '%that%' then '1'
+		else '0'
+		end as Ifthat	
+	from
+		tblEvent te)
+select
+	te3.EventName, te3.EventDetails  
+from
+	ThisandThat as tat
+full join tblEvent te3 on
+	tat.EventId = te3.EventID
+where
+	Ifthis = 1 and Ifthat = 1;	
+	
+
+
+-- CTEs / Ex 02:
+	with Betweennz as
+	-- get a list events which end with letter between n and z
+	(select
+	EventName,CountryID 
+from
+	tblEvent te
+	where right(EventName,1) BETWEEN 'n' and 'z')
+
+select
+	tc.CountryName, bnz.EventName
+from
+	Betweennz as bnz
+left join tblCountry tc on
+	bnz.CountryID = tc.CountryID;
+	
+	
+
+
+-- CTEs / Ex 03:
+with MpInAuthorName as
+-- Get a list of all of the episodes written by authors with MP in their names and show the episode id numbers for those Doctor Who episodes written by authors with MP as part of their names
+(select
+	ta.AuthorName,
+	te.EpisodeNumber,
+	te.EpisodeId 
+from
+	tblEpisode te
+left join tblAuthor ta on
+	te.AuthorId = ta.AuthorId
+where ta.AuthorName like '%MP%')
+
+
+select
+	DISTINCT tc.CompanionName 
+from
+	MpInAuthorName as mian
+left join tblEpisodeCompanion tec on
+	mian.EpisodeId = tec.EpisodeId
+inner join tblCompanion tc on
+tec.CompanionId = tc.CompanionId; 
+
+
+ 
+-- CTEs / Ex 04:
+with nonowlevents as 
+-- get a list of events which contain none of the the lettersin the worlf OWL
+(select
+	*
+from
+	tblEvent te
+where
+	EventDetails not like '%o%'
+	and EventDetails not like '%w%'
+	and EventDetails not like '%l%')
+
+	,OtherEventsInNonOwlCountries as 
+(select
+	tc.CountryName,
+	te2.EventName,
+	te2.CountryID,
+	te2.CategoryID 
+from
+	nonowlevents as noe
+left join tblCountry tc on
+	noe.CountryID = tc.CountryID
+inner join tblEvent te2 on --Its ok to use left join 
+	noe.CountryID = te2.CountryID) 
+
+
+	select
+	DISTINCT tc.CategoryName, te.EventName, te.EventDate
+from
+	OtherEventsInNonOwlCountries as Other
+left join tblCategory tc on
+	Other.CategoryID = tc.CategoryID 
+left join tblEvent te on Other.CategoryID = te.CategoryID;
+
+
+-- CTEs / Ex 05:
+with EraandEventId as
+(select
+	case
+		when year(te.EventDate) <1900 then '19th century and earlier'
+		when year(te.EventDate) < 2000 then '20th century'
+		else '21st century'
+		end as Era,
+		te.EventID 
+	from
+		tblEvent te)
+	-- Epoch making		
+select Era, 
+	count (DISTINCT EventId)
+from
+	EraandEventId as eae 
+	group by Era;
 
 
 
