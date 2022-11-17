@@ -175,7 +175,7 @@ where
 	or tc2.ContinentName = 'Antarctic';
 
 --Basic joins / Ex 5:
---Inner join
+--Inner join: 459 rows
 select
 	EventName,
 	EventDate,
@@ -293,7 +293,7 @@ from
 	tblEvent te;
 
 
---Aggregation and grouping / Ex 4: 42 rows
+--Aggregation and grouping / Ex 4: 
 select
 	tc2.ContinentName,
 	tc.CountryName,
@@ -468,17 +468,17 @@ select
 from
 	tblEvent te
 where 
-year(EventDate) = 1995;
+year(EventDate) = 1992;
 
 --Calculations using dates / Ex 2:
 select
 	EventDate ,
-	cast('09/26/1995' as date) as DOB, --or datefromparts
-	abs(datediff(day, EventDate, cast('09/26/1995' as date))) as daydiff
+	cast('01/05/1992' as date) as DOB, --or datefromparts
+	abs(datediff(day, EventDate, cast('01/05/1992' as date))) as daydiff
 from
 	tblEvent te
 order by
-	abs(datediff(day, EventDate, cast('09/26/1995' as date))) asc;
+	abs(datediff(day, EventDate, cast('01/05/1992' as date))) asc;
 
 
 --Calculations using dates / Ex 3:
